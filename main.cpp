@@ -1,6 +1,6 @@
 #include "widget.h"
 #include <QApplication>
-#include <QPushButton>
+#include <QPlainTextEdit>
 
 int main(int argc, char *argv[])
 {

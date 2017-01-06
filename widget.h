@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <unordered_set>
 
 namespace Ui {
 class Widget;
@@ -22,6 +23,7 @@ private slots:
     void handleButton();
 private:
     Ui::Widget *ui;
+    int orderCount = 1;
 };
 
 #endif // WIDGET_H
