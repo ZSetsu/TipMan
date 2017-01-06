@@ -24,6 +24,7 @@ void Widget::decorate(){
 
     //Tab 2
     ui->tabWidget->setTabText(1, "During Work");
+    ui->label0->setText("Enter order serial number:");
     ui->label1->setText("Enter order total:");
     ui->label2->setText("Enter tip (If online order):");
     ui->pushButton1->setText("Register This Order");
@@ -36,10 +37,15 @@ void Widget::decorate(){
 
 void Widget::handleButton(){
     double input = ui->doubleSpinBox->value();
+    int osn = ui->spinBox->value();
     ui->doubleSpinBox->setValue(0);
-    QString printVal = "Order " + QString::number(orderCount) + ": $" + QString::number(input);
+    ui->spinBox->setValue(0);
+    QString printVal = "OSN " + QString::number(osn) + ": $" + QString::number(input);
+    pair<int, double> map_input(osn, input);
+    //or use map_input = std::make_pair(osn, input);
+    map.emplace(map_input);
     ui->plainTextEdit->appendPlainText(printVal);
-    orderCount++;
+    //orderCount++;
 }
 
 QString Widget::name() const{

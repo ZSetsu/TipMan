@@ -33,6 +33,16 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
+        <widget class="QLabel" name="label0">
+         <property name="text">
+          <string>label0</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBox"/>
+       </item>
+       <item>
         <widget class="QLabel" name="label1">
          <property name="text">
           <string>label1</string>

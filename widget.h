@@ -2,7 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
-#include <unordered_set>
+#include <map>
 
 namespace Ui {
 class Widget;
@@ -23,7 +23,9 @@ private slots:
     void handleButton();
 private:
     Ui::Widget *ui;
-    int orderCount = 1;
+    //typedef pair<int, double> value_type;
+    std::map<int, double> map;
+    //int orderCount = 1;
 };
 
 #endif // WIDGET_H
