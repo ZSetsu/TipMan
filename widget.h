@@ -3,10 +3,26 @@
 
 #include <QWidget>
 #include <map>
+#include <QMessageBox>
 
 namespace Ui {
 class Widget;
 }
+
+struct Driver{
+    bool filled = false;
+    int driverNum = 0;
+    double onlineTipTotal = 0;
+    double payWithCashTotal = 0;
+    QString password = "null";
+};
+
+struct Order{
+    bool online = false;
+    double onlineTipVal = 0;
+    double price;
+    QString driverPassword;
+};
 
 class Widget : public QWidget
 {
@@ -20,12 +36,26 @@ public:
     void decorate();
     QString name() const;
 private slots:
+    void startCashButton();
     void handleButton();
+    void deleteOSN();
+    void showInfo();
+    void clearInfo();
 private:
     Ui::Widget *ui;
-    //typedef pair<int, double> value_type;
-    std::map<int, double> map;
-    //int orderCount = 1;
+    std::map<int, Order> map;
+    std::map<int, Order>::iterator it;
+
+    QString printVal;
+    QString driverPass;
+    int startingCash = 0;
+    int pdriverNum = 0;
+    int orderCount = 1;
+
+    Driver driver1;
+    Driver driver2;
+    Driver driver3;
+
 };
 
 #endif // WIDGET_H
