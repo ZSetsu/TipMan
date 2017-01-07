@@ -6,6 +6,8 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget) //sets ui variable as the ui
 {
     ui->setupUi(this);
+    QPixmap pix("D:/GitRepo/TipMan/logo_san-fu.png");
+    ui->label->setPixmap(pix);
 }
 
 Widget::~Widget()
@@ -22,12 +24,14 @@ void Widget::decorate(){
     //Tab 1
     ui->tabWidget->setTabText(0, "Before Work");
     ui->label4->setText("Thanks for coming in today! Your presence is greatly appreciated.");
-    ui->label5->setText("Enter starting cash value in pocket: ");
+    //ui->label5->setText("Enter starting cash value in pocket: ");
     ui->label6->setText("Enter 2-character password and choose assigned Driver #: ");
-    ui->pushButton->setText("Confirm Cash Value");
+    ui->pushButton->setText("Confirm Password");
     ui->comboBox->addItem("Driver 1");
     ui->comboBox->addItem("Driver 2");
     ui->comboBox->addItem("Driver 3");
+    ui->comboBox->addItem("Admin");
+
     connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(startCashButton()));
 
     //Tab 2
@@ -35,9 +39,9 @@ void Widget::decorate(){
     ui->label7->setText("Enter your password:");
     ui->label0->setText("Enter order serial number:");
     ui->label1->setText("Enter order total:");
-    ui->label2->setText("Enter tip (If online order):");
     ui->label3->setText("Made a mistake? Erase OSN #:");
     ui->label8->setText("Note: You must enter your password above to delete an OSN.");
+    ui->checkBox->setText("Online order? Enter tip amount if so:");
 
     ui->pushButton1->setText("Register This Order");
     ui->pushButton2->setText("Delete This OSN");
@@ -54,10 +58,24 @@ void Widget::decorate(){
     ui->pushButton4->setText("Show Information");
     connect(ui->pushButton4, SIGNAL(clicked()), this, SLOT(showInfo()));
     connect(ui->pushButton3, SIGNAL(clicked()), this, SLOT(clearInfo()));
+
+    //Tab4
+    ui->tabWidget->setTabText(3, "Admin");
+    ui->label20->setText("Enter Admin password:");
+    ui->label21->setText("No info to display.");
+    ui->label22->setText("Total:");
+    ui->comboBox_2->addItem("All Deliveries");
+    ui->comboBox_2->addItem("Driver 1");
+    ui->comboBox_2->addItem("Driver 2");
+    ui->comboBox_2->addItem("Driver 3");
+    ui->pushButton_2->setText("Show Information");
+    ui->pushButton_3->setText("Clear Information");
+
+    connect(ui->pushButton_2, SIGNAL(clicked()), this, SLOT(adminInfo()));
+    connect(ui->pushButton_3, SIGNAL(clicked()), this, SLOT(adminClear()));
 }
 
 void Widget::startCashButton(){
-    startingCash = ui->spinBox_3->value();
     if(ui->comboBox->currentText() == "Driver 1" && !driver1.filled){
         pdriverNum = 1;
         driver1.driverNum = 1;
@@ -76,15 +94,21 @@ void Widget::startCashButton(){
         driver3.password = ui->lineEdit->text();
         driver3.filled = true;
     }
+    else if(ui->comboBox->currentText() == "Admin" && !admin.filled){
+        admin.filled = true;
+        admin.password = ui->lineEdit->text();
+    }
     else{
         QMessageBox::information(this, tr("TipMan"), tr("This driver number has already been selected."));
     }
-    if(startingCash > 20){
-        QMessageBox::information(this, tr("TipMan"), tr("It is not recommended that drivers carry over $20."));
+    QString start = "Thank you Driver " + QString::number(pdriverNum) + ". Your password has been set.";
+    QString startAdmin = "Thank you Admin, your password has been set.";
+    if(ui->comboBox->currentText() == "Admin"){
+        ui->pushButton->setText(startAdmin);
     }
-    QString start = "Thank you Driver " + QString::number(pdriverNum) + ". $" +
-            QString::number(startingCash) + " set as starting cash value. Re-enter if incorrect.";
-    ui->pushButton->setText(start);
+    else{
+        ui->pushButton->setText(start);
+    }
 }
 
 void Widget::handleButton(){
@@ -137,16 +161,30 @@ void Widget::handleButton(){
             ui->plainTextEdit->clear();
             for(it = map.begin(); it != map.end(); ++it){
                 if(password == (it->second).driverPassword){
-                    printVal = "OSN " + QString::number(it->first) + ": $" + QString::number((it->second).price);
+                    printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                    if((it->second).online){
+                        printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                    }
+                    else{
+                        printVal += "\tCash";
+                    }
                     ui->plainTextEdit->appendPlainText(printVal);
                 }
             }
             map.emplace(map_input);
-            printVal = "OSN " + QString::number(osn) + ": $" + QString::number(input);
+            printVal = "OSN " + QString::number(osn) + ": \t$" + QString::number(input);
+            if(map_input.second.online){
+                printVal = printVal + "\tOnline tip: $" + QString::number(map_input.second.onlineTipVal);
+            }
+            else{
+                printVal += "\tCash";
+            }
             ui->plainTextEdit->appendPlainText(printVal);
             ++orderCount;
         }
     }
+    ui->checkBox->setChecked(false);
+    ui->doubleSpinBox_2->setValue(0);
 }
 
 void Widget::deleteOSN(){
@@ -182,7 +220,13 @@ void Widget::deleteOSN(){
         ui->plainTextEdit->clear();
         for(it = map.begin(); it != map.end(); ++it){
             if(password == (it->second).driverPassword){
-                printVal = "OSN " + QString::number(it->first) + ": $" + QString::number((it->second).price);
+                printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                if((it->second).online){
+                    printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                }
+                else{
+                    printVal += "\tCash";
+                }
                 ui->plainTextEdit->appendPlainText(printVal);
             }
         }
@@ -206,9 +250,16 @@ void Widget::showInfo(){
     else{
         for(it = map.begin(); it != map.end(); ++it){
             if(password == (it->second).driverPassword){
-                printVal = "OSN " + QString::number(it->first) + ": $" + QString::number((it->second).price);
+                printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                if((it->second).online){
+                    printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                }
+                else{
+                    printVal += "\tCash";
+                }
                 ui->plainTextEdit_2->appendPlainText(printVal);
                 returnTotal += (it->second).price;
+                }
             }
         }
         QString total = "$" + QString::number(returnTotal);
@@ -254,7 +305,7 @@ void Widget::showInfo(){
         }
         // take cashtotal, and subtract online tips. if pos, must give manager money. If neg, manager gives you money.
     }
-}
+
 
 void Widget::clearInfo(){
     ui->lineEdit_3->setText("");
@@ -262,6 +313,128 @@ void Widget::clearInfo(){
     ui->lineEdit_5->setText("");
     ui->label13->setText("Click show information for result.");
     ui->plainTextEdit_2->clear();
+}
+
+void Widget::adminInfo(){
+    double total = 0;
+    double owedAmount = 0;
+    QString totalVal = "";
+    ui->plainTextEdit_3->clear();
+    ui->lineEdit_7->setText(0);
+    ui->lineEdit_8->setText(0);
+    if(ui->lineEdit_6->text() == admin.password){
+        if(ui->comboBox_2->currentText() == "All Deliveries"){
+            for(it = map.begin(); it != map.end(); ++it){
+                printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                if((it->second).online){
+                    printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                }
+                else{
+                    printVal += "\tCash";
+                }
+                ui->plainTextEdit_3->appendPlainText(printVal);
+                total += (it->second).price;
+            }
+            totalVal = "$" + QString::number(total);
+            ui->lineEdit_7->setText(totalVal);
+            ui->label21->setText("No info to display.");
+            ui->lineEdit_8->setText("");
+        }
+        else if(ui->comboBox_2->currentText() == "Driver 1"){
+            for(it = map.begin(); it != map.end(); ++it){
+                if(driver1.password == (it->second).driverPassword){
+                    printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                    if((it->second).online){
+                        printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                    }
+                    else{
+                        printVal += "\tCash";
+                    }
+                    ui->plainTextEdit_3->appendPlainText(printVal);
+                    total += (it->second).price;
+                }
+            }
+            totalVal = "$" + QString::number(total);
+            ui->lineEdit_7->setText(totalVal);
+            owedAmount = driver1.payWithCashTotal - driver1.onlineTipTotal;
+            if(owedAmount <= 0){
+                owedAmount *= -1;
+                ui->label21->setText("You owe the driver:");
+                ui->lineEdit_8->setText(QString::number(owedAmount));
+            }
+            else{
+                ui->label21->setText("The driver owes you:");
+                ui->lineEdit_8->setText(QString::number(owedAmount));
+            }
+        }
+
+
+        else if(ui->comboBox_2->currentText() == "Driver 2"){
+            for(it = map.begin(); it != map.end(); ++it){
+                if(driver2.password == (it->second).driverPassword){
+                    printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                    if((it->second).online){
+                        printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                    }
+                    else{
+                        printVal += "\tCash";
+                    }
+                    ui->plainTextEdit_3->appendPlainText(printVal);
+                    total += (it->second).price;
+                }
+            }
+            totalVal = "$" + QString::number(total);
+            ui->lineEdit_7->setText(totalVal);
+            owedAmount = driver2.payWithCashTotal - driver2.onlineTipTotal;
+            if(owedAmount <= 0){
+                owedAmount *= -1;
+                ui->label21->setText("You owe the driver:");
+                ui->lineEdit_8->setText(QString::number(owedAmount));
+            }
+            else{
+                ui->label21->setText("The driver owes you:");
+                ui->lineEdit_8->setText(QString::number(owedAmount));
+            }
+        }
+        else{
+            for(it = map.begin(); it != map.end(); ++it){
+                if(driver3.password == (it->second).driverPassword){
+                    printVal = "OSN " + QString::number(it->first) + ": \t$" + QString::number((it->second).price);
+                    if((it->second).online){
+                        printVal = printVal + "\tOnline tip: $" + QString::number((it->second).onlineTipVal);
+                    }
+                    else{
+                        printVal += "\tCash";
+                    }
+                    ui->plainTextEdit_3->appendPlainText(printVal);
+                    total += (it->second).price;
+                }
+            }
+            totalVal = "$" + QString::number(total);
+            ui->lineEdit_7->setText(totalVal);
+            owedAmount = driver3.payWithCashTotal - driver3.onlineTipTotal;
+            if(owedAmount <= 0){
+                owedAmount *= -1;
+                ui->label21->setText("You owe the driver:");
+                ui->lineEdit_8->setText(QString::number(owedAmount));
+            }
+            else{
+                ui->label21->setText("The driver owes you:");
+                ui->lineEdit_8->setText(QString::number(owedAmount));
+            }
+        }
+    }
+    else{
+        QMessageBox::information(this, tr("TipMan"), tr("Incorrect password."));
+    }
+}
+
+void Widget::adminClear(){
+    ui->lineEdit_6->setText("");
+    ui->lineEdit_7->setText("");
+    ui->lineEdit_8->setText("");
+    ui->plainTextEdit_3->clear();
+    ui->label21->setText("No information to display.");
 }
 
 QString Widget::name() const{

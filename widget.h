@@ -9,6 +9,11 @@ namespace Ui {
 class Widget;
 }
 
+struct Admin{
+    bool filled = false;
+    QString password = "null";
+};
+
 struct Driver{
     bool filled = false;
     int driverNum = 0;
@@ -41,6 +46,8 @@ private slots:
     void deleteOSN();
     void showInfo();
     void clearInfo();
+    void adminInfo();
+    void adminClear();
 private:
     Ui::Widget *ui;
     std::map<int, Order> map;
@@ -51,6 +58,8 @@ private:
     int startingCash = 0;
     int pdriverNum = 0;
     int orderCount = 1;
+
+    Admin admin;
 
     Driver driver1;
     Driver driver2;
