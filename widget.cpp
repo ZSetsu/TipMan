@@ -6,7 +6,7 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget) //sets ui variable as the ui
 {
     ui->setupUi(this);
-    QPixmap pix("D:/GitRepo/TipMan/logo_san-fu.png");
+    QPixmap pix(":/images/logo_san-fu.png");
     ui->label->setPixmap(pix);
 }
 
@@ -109,6 +109,7 @@ void Widget::startCashButton(){
     else{
         ui->pushButton->setText(start);
     }
+    ui->lineEdit->setText("");
 }
 
 void Widget::handleButton(){
@@ -237,10 +238,12 @@ void Widget::deleteOSN(){
 
 void Widget::showInfo(){
     double returnTotal = 0;
+    double commission = 0;
     QString password = ui->lineEdit_3->text();
     ui->lineEdit_3->setText("");
     ui->lineEdit_4->setText("");
     ui->lineEdit_5->setText("");
+    ui->lineEdit_com->setText("");
     ui->label13->setText("Click show information for result.");
     ui->plainTextEdit_2->clear();
 
@@ -264,42 +267,44 @@ void Widget::showInfo(){
         }
         QString total = "$" + QString::number(returnTotal);
         ui->lineEdit_4->setText(total);
+        commission = returnTotal * .05;
+        ui->lineEdit_com->setText("$" + QString::number(commission));
 
         double owedAmount = 0;
         if(password == driver1.password){
-            owedAmount = driver1.payWithCashTotal - driver1.onlineTipTotal;
+            owedAmount = driver1.payWithCashTotal - driver1.onlineTipTotal - commission;
             if(owedAmount <= 0){
                 owedAmount *= -1;
                 ui->label13->setText("The manager owes you:");
-                ui->lineEdit_5->setText(QString::number(owedAmount));
+                ui->lineEdit_5->setText("$" + QString::number(owedAmount));
             }
             else{
                 ui->label13->setText("You owe the manager:");
-                ui->lineEdit_5->setText(QString::number(owedAmount));
+                ui->lineEdit_5->setText("$" + QString::number(owedAmount));
             }
         }
         else if(password == driver2.password){
-            owedAmount = driver2.payWithCashTotal - driver2.onlineTipTotal;
+            owedAmount = driver2.payWithCashTotal - driver2.onlineTipTotal - commission;
             if(owedAmount <= 0){
                 owedAmount *= -1;
                 ui->label13->setText("The manager owes you:");
-                ui->lineEdit_5->setText(QString::number(owedAmount));
+                ui->lineEdit_5->setText("$" + QString::number(owedAmount));
             }
             else{
                 ui->label13->setText("You owe the manager:");
-                ui->lineEdit_5->setText(QString::number(owedAmount));
+                ui->lineEdit_5->setText("$" + QString::number(owedAmount));
             }
         }
         else{
-            owedAmount = driver3.payWithCashTotal - driver3.onlineTipTotal;
+            owedAmount = driver3.payWithCashTotal - driver3.onlineTipTotal - commission;
             if(owedAmount <= 0){
                 owedAmount *= -1;
                 ui->label13->setText("The manager owes you:");
-                ui->lineEdit_5->setText(QString::number(owedAmount));
+                ui->lineEdit_5->setText("$" + QString::number(owedAmount));
             }
             else{
                 ui->label13->setText("You owe the manager:");
-                ui->lineEdit_5->setText(QString::number(owedAmount));
+                ui->lineEdit_5->setText("$" + QString::number(owedAmount));
 
             }
         }
@@ -311,6 +316,7 @@ void Widget::clearInfo(){
     ui->lineEdit_3->setText("");
     ui->lineEdit_4->setText("");
     ui->lineEdit_5->setText("");
+    ui->lineEdit_com->setText("");
     ui->label13->setText("Click show information for result.");
     ui->plainTextEdit_2->clear();
 }
@@ -318,10 +324,12 @@ void Widget::clearInfo(){
 void Widget::adminInfo(){
     double total = 0;
     double owedAmount = 0;
+    double commission = 0;
     QString totalVal = "";
     ui->plainTextEdit_3->clear();
     ui->lineEdit_7->setText(0);
     ui->lineEdit_8->setText(0);
+    ui->lineEdit_com_2->setText(0);
     if(ui->lineEdit_6->text() == admin.password){
         if(ui->comboBox_2->currentText() == "All Deliveries"){
             for(it = map.begin(); it != map.end(); ++it){
@@ -339,6 +347,8 @@ void Widget::adminInfo(){
             ui->lineEdit_7->setText(totalVal);
             ui->label21->setText("No info to display.");
             ui->lineEdit_8->setText("");
+            commission = total * 0.05;
+            ui->lineEdit_com_2->setText("$" + QString::number(commission));
         }
         else if(ui->comboBox_2->currentText() == "Driver 1"){
             for(it = map.begin(); it != map.end(); ++it){
@@ -356,15 +366,17 @@ void Widget::adminInfo(){
             }
             totalVal = "$" + QString::number(total);
             ui->lineEdit_7->setText(totalVal);
-            owedAmount = driver1.payWithCashTotal - driver1.onlineTipTotal;
+            commission = total * 0.05;
+            ui->lineEdit_com_2->setText("$" + QString::number(commission));
+            owedAmount = driver1.payWithCashTotal - driver1.onlineTipTotal - commission;
             if(owedAmount <= 0){
                 owedAmount *= -1;
                 ui->label21->setText("You owe the driver:");
-                ui->lineEdit_8->setText(QString::number(owedAmount));
+                ui->lineEdit_8->setText("$" + QString::number(owedAmount));
             }
             else{
                 ui->label21->setText("The driver owes you:");
-                ui->lineEdit_8->setText(QString::number(owedAmount));
+                ui->lineEdit_8->setText("$" + QString::number(owedAmount));
             }
         }
 
@@ -385,15 +397,17 @@ void Widget::adminInfo(){
             }
             totalVal = "$" + QString::number(total);
             ui->lineEdit_7->setText(totalVal);
-            owedAmount = driver2.payWithCashTotal - driver2.onlineTipTotal;
+            commission = total * 0.05;
+            ui->lineEdit_com_2->setText("$" + QString::number(commission));
+            owedAmount = driver2.payWithCashTotal - driver2.onlineTipTotal - commission;
             if(owedAmount <= 0){
                 owedAmount *= -1;
                 ui->label21->setText("You owe the driver:");
-                ui->lineEdit_8->setText(QString::number(owedAmount));
+                ui->lineEdit_8->setText("$" + QString::number(owedAmount));
             }
             else{
                 ui->label21->setText("The driver owes you:");
-                ui->lineEdit_8->setText(QString::number(owedAmount));
+                ui->lineEdit_8->setText("$" + QString::number(owedAmount));
             }
         }
         else{
@@ -412,15 +426,17 @@ void Widget::adminInfo(){
             }
             totalVal = "$" + QString::number(total);
             ui->lineEdit_7->setText(totalVal);
-            owedAmount = driver3.payWithCashTotal - driver3.onlineTipTotal;
+            commission = total * 0.05;
+            ui->lineEdit_com_2->setText("$" + QString::number(commission));
+            owedAmount = driver3.payWithCashTotal - driver3.onlineTipTotal - commission;
             if(owedAmount <= 0){
                 owedAmount *= -1;
                 ui->label21->setText("You owe the driver:");
-                ui->lineEdit_8->setText(QString::number(owedAmount));
+                ui->lineEdit_8->setText("$" + QString::number(owedAmount));
             }
             else{
                 ui->label21->setText("The driver owes you:");
-                ui->lineEdit_8->setText(QString::number(owedAmount));
+                ui->lineEdit_8->setText("$" + QString::number(owedAmount));
             }
         }
     }
@@ -433,6 +449,7 @@ void Widget::adminClear(){
     ui->lineEdit_6->setText("");
     ui->lineEdit_7->setText("");
     ui->lineEdit_8->setText("");
+     ui->lineEdit_com_2->setText("");
     ui->plainTextEdit_3->clear();
     ui->label21->setText("No information to display.");
 }
