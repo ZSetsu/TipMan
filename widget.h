@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <map>
 #include <QMessageBox>
+#include <math.h>
 
 namespace Ui {
 class Widget;

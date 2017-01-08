@@ -268,6 +268,7 @@ void Widget::showInfo(){
         QString total = "$" + QString::number(returnTotal);
         ui->lineEdit_4->setText(total);
         commission = returnTotal * .05;
+        commission = roundf(commission * 100) / 100;
         ui->lineEdit_com->setText("$" + QString::number(commission));
 
         double owedAmount = 0;
@@ -348,6 +349,7 @@ void Widget::adminInfo(){
             ui->label21->setText("No info to display.");
             ui->lineEdit_8->setText("");
             commission = total * 0.05;
+            commission = roundf(commission * 100) / 100;
             ui->lineEdit_com_2->setText("$" + QString::number(commission));
         }
         else if(ui->comboBox_2->currentText() == "Driver 1"){
@@ -367,6 +369,7 @@ void Widget::adminInfo(){
             totalVal = "$" + QString::number(total);
             ui->lineEdit_7->setText(totalVal);
             commission = total * 0.05;
+            commission = roundf(commission * 100) / 100;
             ui->lineEdit_com_2->setText("$" + QString::number(commission));
             owedAmount = driver1.payWithCashTotal - driver1.onlineTipTotal - commission;
             if(owedAmount <= 0){
@@ -398,6 +401,7 @@ void Widget::adminInfo(){
             totalVal = "$" + QString::number(total);
             ui->lineEdit_7->setText(totalVal);
             commission = total * 0.05;
+            commission = roundf(commission * 100) / 100;
             ui->lineEdit_com_2->setText("$" + QString::number(commission));
             owedAmount = driver2.payWithCashTotal - driver2.onlineTipTotal - commission;
             if(owedAmount <= 0){
@@ -427,6 +431,7 @@ void Widget::adminInfo(){
             totalVal = "$" + QString::number(total);
             ui->lineEdit_7->setText(totalVal);
             commission = total * 0.05;
+            commission = roundf(commission * 100) / 100;
             ui->lineEdit_com_2->setText("$" + QString::number(commission));
             owedAmount = driver3.payWithCashTotal - driver3.onlineTipTotal - commission;
             if(owedAmount <= 0){
